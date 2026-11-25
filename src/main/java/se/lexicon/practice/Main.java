@@ -1,6 +1,6 @@
-package se.lexicon;
+package se.lexicon.practice;
 
-import se.lexicon.db.DatabaseConnection;
+import se.lexicon.practice.db.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

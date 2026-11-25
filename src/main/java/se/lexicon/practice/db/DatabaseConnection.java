@@ -1,4 +1,4 @@
-package se.lexicon.db;
+package se.lexicon.practice.db;
 
 import org.postgresql.ds.PGSimpleDataSource;
 
