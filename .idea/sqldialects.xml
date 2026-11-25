@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/se/lexicon/exercise/school_management.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/se/lexicon/exercise/student/student.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/DB_SCRIPTS.sql" dialect="MariaDB" />
   </component>
 </project>
