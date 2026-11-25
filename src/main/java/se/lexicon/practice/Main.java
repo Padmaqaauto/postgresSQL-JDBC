@@ -1,46 +1,64 @@
 package se.lexicon.practice;
 
-import se.lexicon.practice.db.DatabaseConnection;
 
+
+import se.lexicon.practice.dao.StudentDAOImpl;
+import se.lexicon.practice.db.DatabaseConnection;
+import se.lexicon.practice.model.Student;
+import se.lexicon.practice.dao.StudentDAO;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        String sql = """
-                SELECT id, name, class_group
-                FROM student
-                ORDER BY id
-                """;
+        // Get PostgreSQL DataSource
+        DataSource dataSource = DatabaseConnection.getDataSource();
 
-        try (Connection connection =
-                     DatabaseConnection.getDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
 
-            System.out.println("Database connected successfully!");
-            System.out.println("Database: " + connection.getCatalog());
+            try {
+                // Start transaction
+                connection.setAutoCommit(false);
 
-            try (PreparedStatement statement =
-                         connection.prepareStatement(sql);
-                 ResultSet resultSet = statement.executeQuery()) {
+                StudentDAO studentDao = new StudentDAOImpl(connection);
 
-                while (resultSet.next()) {
+                Student student = new Student(
+                        "Mehrdad Javan",
+                        "Java-Group-1"
+                );
 
-                    int id = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
-                    String classGroup = resultSet.getString("class_group");
+                // Insert student
+                Student savedStudent = studentDao.save(student);
+                System.out.println("Saved student: " + savedStudent);
 
-                    System.out.println(
-                            id + " | " + name + " | " + classGroup
-                    );
+                // Retrieve all students
+                List<Student> students = studentDao.findAll();
+                students.forEach(System.out::println);
+
+                // Commit transaction
+                connection.commit();
+                System.out.println("Transaction committed successfully!");
+
+            } catch (SQLException | RuntimeException e) {
+
+                // Rollback if something goes wrong
+                try {
+                    connection.rollback();
+                    System.out.println("Transaction rolled back!");
+                } catch (SQLException rollbackException) {
+                    e.addSuppressed(rollbackException);
                 }
+
+                e.printStackTrace();
             }
 
         } catch (SQLException e) {
-            System.out.println("Database connection failed!");
+            System.out.println("PostgreSQL connection failed!");
             e.printStackTrace();
         }
     }
